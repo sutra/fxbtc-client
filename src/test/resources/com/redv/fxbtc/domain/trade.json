@@ -1,0 +1,16 @@
+{
+	"result": true,
+	"symbol": "btc_cny",
+	"type": "buy",
+	"trade_info": {
+		"traded_orders": [{
+			"rate": 100,
+			"vol": 5
+		}],
+		"limit_orders": [{
+			"id": 1357571743002,
+			"rate": 101,
+			"vol": 6.66
+		}]
+	}
+}

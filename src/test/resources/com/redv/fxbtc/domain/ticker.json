@@ -1,0 +1,14 @@
+{
+	"result": true,
+	"ticker": {
+		"high": 4233.66,
+		"low": 3599.99,
+		"vol": 25226.09583433,
+		"last_rate": 3655.94,
+		"ask": 3655.94,
+		"bid": 3639.04
+	},
+	"params": {
+		"symbol": "btc_cny"
+	}
+}

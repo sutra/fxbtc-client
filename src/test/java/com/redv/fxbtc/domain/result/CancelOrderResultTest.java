@@ -13,21 +13,20 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redv.fxbtc.valuereader.JsonValueReader;
 
-public class TokenResultTest {
+public class CancelOrderResultTest {
 
-	private final Logger log = LoggerFactory.getLogger(TokenResultTest.class);
+	private final Logger log = LoggerFactory.getLogger(CancelOrderResultTest.class);
 
 	@Test
 	public void test() throws IOException {
-		JsonValueReader<TokenResult> jsonValueReader = new JsonValueReader<>(
-				new ObjectMapper(), TokenResult.class);
+		JsonValueReader<CancelOrderResult> jsonValueReader = new JsonValueReader<>(
+				new ObjectMapper(), CancelOrderResult.class);
 		try (InputStream inputStream = getClass().getResourceAsStream(
-				"token.json")) {
-			TokenResult result = jsonValueReader.read(inputStream);
+				"cancelOrder.json")) {
+			CancelOrderResult result = jsonValueReader.read(inputStream);
 			log.debug("{}", result);
 			assertTrue(result.isSuccess());
-			assertEquals("PU8JXNRHC452L8NBZ67BSLE9WK2B8H69JABRDBWR98SRHYA457J5GUGWNJXT5D9V",
-					result.getToken());
+			assertEquals(1357571743002L, result.getId().longValue());
 		}
 
 	}

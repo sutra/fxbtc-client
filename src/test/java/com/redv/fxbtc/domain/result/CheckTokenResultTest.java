@@ -24,7 +24,7 @@ public class CheckTokenResultTest {
 				"checkToken.json")) {
 			CheckTokenResult result = jsonValueReader.read(inputStream);
 			log.debug("{}", result);
-			assertTrue(result.isSuccess());
+			assertTrue(result.isValid());
 		}
 
 	}

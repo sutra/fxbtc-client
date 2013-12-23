@@ -37,6 +37,7 @@ public class DepthResultTest {
 			for (Data bid : bids) {
 				log.debug("Bid: {}", bid);
 			}
+			assertEquals(Symbol.BTC_CNY, result.getSymbol());
 			assertEquals(Symbol.BTC_CNY, result.getParams().getSymbol());
 		}
 

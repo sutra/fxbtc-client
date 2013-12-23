@@ -172,7 +172,9 @@ public class FXBTCClient {
 		list.add(new BasicNameValuePair("token", token.getToken()));
 		list.add(new BasicNameValuePair("op", op));
 		Collections.addAll(list, params);
-		return httpClient.post(TRADE_API, valueType, list);
+		T value = httpClient.post(TRADE_API, valueType, list);
+		log.debug("Trade post result: {}", value);
+		return value;
 	}
 
 	private void refreshToken() throws IOException {

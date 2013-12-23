@@ -7,7 +7,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redv.fxbtc.FXBTCClient;
 
 public class JsonValueReader<T> implements ValueReader<T> {
 
@@ -26,16 +28,23 @@ public class JsonValueReader<T> implements ValueReader<T> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public T read(InputStream inputStream) throws IOException {
+	public T read(final InputStream inputStream) throws IOException {
 
-		if (log.isDebugEnabled()) {
-			String content = IOUtils.toString(inputStream);
-			log.debug("Reading {} from {}.", valueType, content);
+		final String content = IOUtils.toString(inputStream,
+				FXBTCClient.ENCODING);
 
-			inputStream = IOUtils.toInputStream(content);
+		log.debug("Reading {} from {}.", valueType, content);
+
+		final InputStream newInputStream = IOUtils.toInputStream(content,
+				FXBTCClient.ENCODING);
+
+		try {
+			return objectMapper.readValue(newInputStream, valueType);
+		} catch (JsonParseException e) {
+			String msg = String.format("Parse from %1$s failed: {}", content,
+					e.getMessage());
+			throw new JsonParseException(msg, e.getLocation(), e);
 		}
-
-		return objectMapper.readValue(inputStream, valueType);
 	}
 
 }

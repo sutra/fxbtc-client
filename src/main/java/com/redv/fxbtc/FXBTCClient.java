@@ -36,6 +36,8 @@ import com.redv.fxbtc.domain.result.TradesResult;
 
 public class FXBTCClient {
 
+	public static final String ENCODING = "UTF-8";
+
 	private static final URI MARKET_API = URI.create("https://data.fxbtc.com/api");
 	private static final URI TRADE_API = URI.create("https://trade.fxbtc.com/api");
 

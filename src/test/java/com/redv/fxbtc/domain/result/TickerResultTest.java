@@ -1,4 +1,4 @@
-package com.redv.fxbtc.domain;
+package com.redv.fxbtc.domain.result;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redv.fxbtc.domain.Symbol;
 import com.redv.fxbtc.domain.result.TickerResult;
 import com.redv.fxbtc.valuereader.JsonValueReader;
 

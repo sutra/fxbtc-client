@@ -33,7 +33,7 @@ public class JsonValueReader<T> implements ValueReader<T> {
 		final String content = IOUtils.toString(inputStream,
 				FXBTCClient.ENCODING);
 
-		log.debug("Reading {} from {}.", valueType, content);
+		log.debug("Reading {} from \"{}\".", valueType, content);
 
 		final InputStream newInputStream = IOUtils.toInputStream(content,
 				FXBTCClient.ENCODING);
@@ -41,7 +41,8 @@ public class JsonValueReader<T> implements ValueReader<T> {
 		try {
 			return objectMapper.readValue(newInputStream, valueType);
 		} catch (JsonParseException e) {
-			String msg = String.format("Parse from %1$s failed: %2$s", content,
+			String msg = String.format("Parse from \"%1$s\" failed: %2$s",
+					content,
 					e.getMessage());
 			throw new JsonParseException(msg, e.getLocation(), e);
 		}

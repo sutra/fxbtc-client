@@ -27,7 +27,7 @@ public class TokenResultTest {
 			log.debug("{}", result);
 			assertTrue(result.isSuccess());
 			assertEquals("PU8JXNRHC452L8NBZ67BSLE9WK2B8H69JABRDBWR98SRHYA457J5GUGWNJXT5D9V",
-					result.getToken());
+					result.getToken().getToken());
 		}
 
 	}

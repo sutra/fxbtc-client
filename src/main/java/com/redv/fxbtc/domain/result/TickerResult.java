@@ -10,8 +10,9 @@ public class TickerResult extends MarketDataResult<Ticker> {
 
 	public TickerResult(@JsonProperty("result") boolean result,
 			@JsonProperty("ticker") Ticker ticker,
-			@JsonProperty("params") Params params) {
-		super(result, ticker, params);
+			@JsonProperty("params") Params params,
+			@JsonProperty("error") Error error) {
+		super(result, ticker, params, error);
 	}
 
 	public Ticker getTicker() {

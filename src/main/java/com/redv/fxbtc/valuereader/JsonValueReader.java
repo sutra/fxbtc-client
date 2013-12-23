@@ -41,7 +41,7 @@ public class JsonValueReader<T> implements ValueReader<T> {
 		try {
 			return objectMapper.readValue(newInputStream, valueType);
 		} catch (JsonParseException e) {
-			String msg = String.format("Parse from %1$s failed: {}", content,
+			String msg = String.format("Parse from %1$s failed: %2$s", content,
 					e.getMessage());
 			throw new JsonParseException(msg, e.getLocation(), e);
 		}

@@ -16,8 +16,9 @@ public class TradeInfoResult extends DataResult<TradeInfo> {
 	public TradeInfoResult(@JsonProperty("result") boolean result,
 			@JsonProperty("symbol") String symbol,
 			@JsonProperty("type") String type,
-			@JsonProperty("trade_info") TradeInfo data) {
-		super(result, data);
+			@JsonProperty("trade_info") TradeInfo data,
+			@JsonProperty("error") Error error) {
+		super(result, data, error);
 		this.symbol = Symbol.valueOfSymbol(symbol);
 		this.type = Type.valueOfTradeType(type);
 	}

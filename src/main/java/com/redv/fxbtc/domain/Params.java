@@ -10,20 +10,28 @@ public class Params extends AbstractObject {
 
 	private String since;
 
-	public void setSymbol(String symbol) {
-		this.symbol = Symbol.valueOfSymbol(symbol);
-	}
-
 	public Symbol getSymbol() {
 		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = Symbol.valueOfSymbol(symbol);
 	}
 
 	public Integer getCount() {
 		return count;
 	}
 
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
 	public String getSince() {
 		return since;
+	}
+
+	public void setSince(String since) {
+		this.since = since;
 	}
 
 }

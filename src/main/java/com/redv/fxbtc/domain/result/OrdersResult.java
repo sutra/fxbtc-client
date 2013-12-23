@@ -15,8 +15,9 @@ public class OrdersResult extends DataResult<List<Order>> {
 
 	public OrdersResult(@JsonProperty("result") boolean result,
 			@JsonProperty("symbol") String symbol,
-			@JsonProperty("orders") List<Order> data) {
-		super(result, data);
+			@JsonProperty("orders") List<Order> data,
+			@JsonProperty("error") Error error) {
+		super(result, data, error);
 		this.symbol = Symbol.valueOfSymbol(symbol);
 	}
 

@@ -14,8 +14,9 @@ public class DepthResult extends MarketDataResult<Depth> {
 	public DepthResult(@JsonProperty("result") boolean result,
 			@JsonProperty("depth") Depth data,
 			@JsonProperty("params") Params params,
-			@JsonProperty("symbol") String symbol) {
-		super(result, data, params);
+			@JsonProperty("symbol") String symbol,
+			@JsonProperty("error") Error error) {
+		super(result, data, params, error);
 		this.symbol = Symbol.valueOfSymbol(symbol);
 	}
 

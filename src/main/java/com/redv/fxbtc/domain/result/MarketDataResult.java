@@ -8,8 +8,8 @@ public abstract class MarketDataResult<T> extends DataResult<T> {
 
 	private Params params;
 
-	public MarketDataResult(boolean result, T data, Params params) {
-		super(result, data);
+	public MarketDataResult(boolean result, T data, Params params, Error error) {
+		super(result, data, error);
 		this.params = params;
 	}
 

@@ -6,8 +6,8 @@ public abstract class DataResult<T> extends Result {
 
 	private T data;
 
-	public DataResult(boolean result, T data) {
-		super(result);
+	public DataResult(boolean result, T data, Error error) {
+		super(result, error);
 		this.data = data;
 	}
 

@@ -13,8 +13,9 @@ public class TradesResult extends MarketDataResult<List<Trade>> {
 
 	public TradesResult(@JsonProperty("result") boolean result,
 			@JsonProperty("datas") List<Trade> data,
-			@JsonProperty("params") Params params) {
-		super(result, data, params);
+			@JsonProperty("params") Params params,
+			@JsonProperty("error") Error error) {
+		super(result, data, params, error);
 	}
 
 	public List<Trade> getTrades() {

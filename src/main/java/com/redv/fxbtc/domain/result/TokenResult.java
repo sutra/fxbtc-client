@@ -14,8 +14,9 @@ public class TokenResult extends DataResult<String> {
 
 	public TokenResult(@JsonProperty("result") boolean result,
 			@JsonProperty("token") String data,
-			@JsonProperty("timeout") long timeout) {
-		super(result, data);
+			@JsonProperty("timeout") long timeout,
+			@JsonProperty("error") Error error) {
+		super(result, data, error);
 
 		Calendar cal = Calendar.getInstance(new Locale("UTC"));
 		cal.setTimeInMillis(timeout * 1000);

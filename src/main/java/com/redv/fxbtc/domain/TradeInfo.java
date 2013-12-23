@@ -38,8 +38,16 @@ public class TradeInfo extends AbstractObject {
 			return rate;
 		}
 
+		public void setRate(BigDecimal rate) {
+			this.rate = rate;
+		}
+
 		public BigDecimal getVol() {
 			return vol;
+		}
+
+		public void setVol(BigDecimal vol) {
+			this.vol = vol;
 		}
 
 	}
@@ -58,12 +66,24 @@ public class TradeInfo extends AbstractObject {
 			return id;
 		}
 
+		public void setId(Long id) {
+			this.id = id;
+		}
+
 		public BigDecimal getRate() {
 			return rate;
 		}
 
+		public void setRate(BigDecimal rate) {
+			this.rate = rate;
+		}
+
 		public BigDecimal getVol() {
 			return vol;
+		}
+
+		public void setVol(BigDecimal vol) {
+			this.vol = vol;
 		}
 
 	}

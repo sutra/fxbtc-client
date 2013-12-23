@@ -3,6 +3,10 @@ package com.redv.fxbtc.domain;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Depth extends AbstractObject {
@@ -77,8 +81,40 @@ public class Depth extends AbstractObject {
 		 * {@inheritDoc}
 		 */
 		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+			if (obj == this) {
+				return true;
+			}
+			if (obj.getClass() != getClass()) {
+				return false;
+			}
+			Data rhs = (Data) obj;
+			return new EqualsBuilder()
+				.append(rate, rhs.rate)
+				.isEquals();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public int hashCode() {
+			return new HashCodeBuilder(17, 37)
+				.append(rate)
+				.toHashCode();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public int compareTo(Data o) {
-			return rate.compareTo(o.rate);
+			return new CompareToBuilder()
+				.append(rate, o.rate)
+				.toComparison();
 		}
 
 	}

@@ -19,8 +19,16 @@ public class Info extends AbstractObject {
 		return funds;
 	}
 
+	public void setFunds(Funds funds) {
+		this.funds = funds;
+	}
+
 	public Status getStatus() {
 		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	public static class Funds extends AbstractObject {
@@ -35,8 +43,16 @@ public class Info extends AbstractObject {
 			return free;
 		}
 
+		public void setFree(Fund free) {
+			this.free = free;
+		}
+
 		public Fund getLocked() {
 			return locked;
+		}
+
+		public void setLocked(Fund locked) {
+			this.locked = locked;
 		}
 
 		public static class Fund extends AbstractObject {
@@ -53,12 +69,24 @@ public class Info extends AbstractObject {
 				return cny;
 			}
 
+			public void setCny(BigDecimal cny) {
+				this.cny = cny;
+			}
+
 			public BigDecimal getBtc() {
 				return btc;
 			}
 
+			public void setBtc(BigDecimal btc) {
+				this.btc = btc;
+			}
+
 			public BigDecimal getLtc() {
 				return ltc;
+			}
+
+			public void setLtc(BigDecimal ltc) {
+				this.ltc = ltc;
 			}
 
 		}

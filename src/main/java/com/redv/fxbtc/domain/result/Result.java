@@ -1,5 +1,6 @@
 package com.redv.fxbtc.domain.result;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.redv.fxbtc.domain.AbstractObject;
 
 public abstract class Result extends AbstractObject {
@@ -31,7 +32,8 @@ public abstract class Result extends AbstractObject {
 
 		private final String msg;
 
-		public Error(int code, String msg) {
+		public Error(@JsonProperty("code") int code,
+				@JsonProperty("msg") String msg) {
 			this.code = code;
 			this.msg = msg;
 		}

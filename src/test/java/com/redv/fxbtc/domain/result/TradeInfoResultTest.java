@@ -1,6 +1,7 @@
 package com.redv.fxbtc.domain.result;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,23 @@ public class TradeInfoResultTest {
 			assertEquals(1357571743002L, lo.getId().longValue());
 			assertEquals(new BigDecimal(101), lo.getRate());
 			assertEquals(new BigDecimal("6.66"), lo.getVol());
+		}
+
+	}
+
+	@Test
+	public void testParamError() throws IOException {
+		JsonValueReader<TradeInfoResult> jsonValueReader = new JsonValueReader<>(
+				new ObjectMapper(), TradeInfoResult.class);
+		try (InputStream inputStream = getClass().getResourceAsStream(
+				"trade-paramError.json")) {
+			TradeInfoResult result = jsonValueReader.read(inputStream);
+			log.debug("{}", result);
+			assertFalse(result.isSuccess());
+
+			com.redv.fxbtc.domain.result.Result.Error error = result.getError();
+			assertEquals(-500, error.getCode());
+			assertEquals("param error", error.getMsg());
 		}
 
 	}

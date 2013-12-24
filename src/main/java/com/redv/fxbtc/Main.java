@@ -1,6 +1,7 @@
 package com.redv.fxbtc;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import com.redv.fxbtc.domain.Order;
 import com.redv.fxbtc.domain.Symbol;
 import com.redv.fxbtc.domain.Ticker;
 import com.redv.fxbtc.domain.Trade;
+import com.redv.fxbtc.domain.TradeInfo;
 
 public class Main {
 
@@ -48,6 +50,9 @@ public class Main {
 		for (Order order : orders) {
 			log.debug("Order: {}", order);
 		}
+
+		TradeInfo tradeInfo = client.bid(Symbol.BTC_CNY, new BigDecimal("0.01"), new BigDecimal("0.001"));
+		System.out.println(tradeInfo);
 	}
 
 }

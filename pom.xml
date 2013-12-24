@@ -6,8 +6,7 @@
 
 	<groupId>com.redv</groupId>
 	<artifactId>fxbtc-client</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<version>1.0.0</version>
 
 	<name>FXBTC Client</name>
 	<description>

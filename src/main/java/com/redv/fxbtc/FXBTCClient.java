@@ -132,6 +132,19 @@ public class FXBTCClient {
 				new BasicNameValuePair("vol", vol.toString())).getTradeInfo();
 	}
 
+	private Token getFreshToken() throws IOException {
+		refreshToken();
+
+		return token;
+	}
+
+	private void refreshToken() throws IOException {
+		if (token == null || token.isTimeoutAfter(5)) {
+			token = getToken();
+			log.debug("Token: {}", token);
+		}
+	}
+
 	private URI buildMarketURI(String op, Symbol symbol,
 			NameValuePair... params) {
 		List<NameValuePair> list = new ArrayList<>(params.length + 2);
@@ -167,22 +180,13 @@ public class FXBTCClient {
 
 	private <T extends Result> T tradePost(Class<T> valueType, String op,
 			NameValuePair... params) throws IOException {
-		refreshToken();
-
 		List<NameValuePair> list = new ArrayList<>(params.length + 2);
-		list.add(new BasicNameValuePair("token", token.getToken()));
+		list.add(new BasicNameValuePair("token", getFreshToken().getToken()));
 		list.add(new BasicNameValuePair("op", op));
 		Collections.addAll(list, params);
 		T value = post(TRADE_API, valueType, list);
 		log.debug("Trade post result: {}", value);
 		return value;
-	}
-
-	private void refreshToken() throws IOException {
-		if (token == null || token.isTimeout()) {
-			token = getToken();
-			log.debug("Token: {}", token);
-		}
 	}
 
 	private <T extends Result> T get(URI uri, Class<T> valueType)

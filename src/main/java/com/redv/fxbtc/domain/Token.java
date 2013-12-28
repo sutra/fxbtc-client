@@ -24,7 +24,18 @@ public class Token extends AbstractObject {
 	}
 
 	public boolean isTimeout() {
-		return getTimeout().compareTo(new Date()) < 0;
+		return isTimeout(System.currentTimeMillis());
+	}
+
+	/**
+	 * Returns if the token is timeout after given seconds.
+	 */
+	public boolean isTimeoutAfter(long seconds) {
+		return isTimeout(System.currentTimeMillis() + seconds * 1000);
+	}
+
+	public boolean isTimeout(long timeMillis) {
+		return getTimeout().compareTo(new Date(timeMillis)) < 0;
 	}
 
 }

@@ -206,6 +206,7 @@ public class FXBTCClient {
 		if (result.isSuccess()) {
 			return result;
 		} else {
+			log.debug("result: {}", result);
 			throw new FXBTCClientException(result.getError());
 		}
 	}

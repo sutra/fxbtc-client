@@ -154,13 +154,7 @@ public class FXBTCClient {
 		return buildURI(MARKET_API, list);
 	}
 
-	private URI buildURI(URI uri, List<NameValuePair> params) {
-		NameValuePair[] array = new NameValuePair[params.size()];
-		params.toArray(array);
-		return buildURI(uri, array);
-	}
-
-	private URI buildURI(URI uri, NameValuePair... params) {
+	private URI buildURI(URI uri, Iterable<NameValuePair> params) {
 		URIBuilder builder = new URIBuilder(uri);
 		for (NameValuePair param : params) {
 			builder.addParameter(param.getName(), param.getValue());
@@ -202,7 +196,7 @@ public class FXBTCClient {
 	private <T extends Result> T post(URI uri, Class<T> valueType,
 			List<NameValuePair> params) throws FXBTCClientException,
 			IOException {
-		T result = httpClient.post(TRADE_API, valueType, params);
+		T result = httpClient.post(uri, valueType, params);
 		if (result.isSuccess()) {
 			return result;
 		} else {

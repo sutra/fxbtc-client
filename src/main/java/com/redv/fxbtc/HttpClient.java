@@ -6,7 +6,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
@@ -73,12 +72,11 @@ public class HttpClient implements AutoCloseable {
 		return execute(valueReader, new HttpGet(uri));
 	}
 
-	public <T> T post(URI uri, Class<T> valueType)
-			throws IOException {
+	public <T> T post(URI uri, Class<T> valueType) throws IOException {
 		return post(uri, new JsonValueReader<T>(objectMapper, valueType));
 	}
 
-	public <T> T post(URI uri, Class<T> valueType, List<NameValuePair> params)
+	public <T> T post(URI uri, Class<T> valueType, Iterable<NameValuePair> params)
 			throws IOException {
 		return post(uri, new JsonValueReader<T>(objectMapper, valueType), params);
 	}
@@ -100,7 +98,7 @@ public class HttpClient implements AutoCloseable {
 	}
 
 	public <T> T post(URI uri, ValueReader<T> valueReader,
-			List<NameValuePair> params) throws IOException {
+			Iterable<NameValuePair> params) throws IOException {
 		HttpPost post = new HttpPost(uri);
 		post.setEntity(new UrlEncodedFormEntity(params));
 		return execute(valueReader, post);

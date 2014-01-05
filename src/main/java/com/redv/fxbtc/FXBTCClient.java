@@ -63,27 +63,25 @@ public class FXBTCClient {
 	}
 
 	public Ticker getTicker(Symbol symbol) throws IOException {
-		URI uri = buildMarketURI("query_ticker", symbol);
-		return get(uri, TickerResult.class).getTicker();
+		return callMarket(TickerResult.class, "query_ticker", symbol).getTicker();
 	}
 
 	public Depth getDepth(Symbol symbol) throws IOException {
-		URI uri = buildMarketURI("query_depth", symbol);
-		return get(uri, DepthResult.class).getDepth();
+		return callMarket(DepthResult.class, "query_depth", symbol).getDepth();
 	}
 
 	public List<Trade> getLastTrades(Symbol symbol, int count)
 			throws IOException {
-		URI uri = buildMarketURI("query_last_trades", symbol,
-				new BasicNameValuePair("count", Integer.toString(count)));
-		return get(uri, TradesResult.class).getTrades();
+		return callMarket(TradesResult.class, "query_last_trades", symbol,
+				new BasicNameValuePair("count", String.valueOf(count)))
+			.getTrades();
 	}
 
 	public List<Trade> getHistoryTrades(Symbol symbol, long since)
 			throws IOException {
-		URI uri = buildMarketURI("query_history_trades", symbol,
-				new BasicNameValuePair("since", Long.toString(since)));
-		return get(uri, TradesResult.class).getTrades();
+		return callMarket(TradesResult.class, "query_history_trades", symbol,
+				new BasicNameValuePair("since", String.valueOf(since)))
+			.getTrades();
 	}
 
 	public Token getToken() throws IOException {
@@ -145,25 +143,25 @@ public class FXBTCClient {
 		}
 	}
 
-	private URI buildMarketURI(String op, Symbol symbol,
-			NameValuePair... params) {
-		List<NameValuePair> list = new ArrayList<>(params.length + 2);
-		list.add(new BasicNameValuePair("op", op));
-		list.add(new BasicNameValuePair("symbol", symbol.toString()));
-		Collections.addAll(list, params);
-		return buildURI(MARKET_API, list);
-	}
-
-	private URI buildURI(URI uri, Iterable<NameValuePair> params) {
-		URIBuilder builder = new URIBuilder(uri);
+	private <T extends Result> T callMarket(
+			Class<T> resultType,
+			String op,
+			Symbol symbol,
+			NameValuePair... params)
+			throws IOException {
+		final URIBuilder builder = new URIBuilder(MARKET_API)
+			.setParameter("op", op)
+			.setParameter("symbol", symbol.toString());
 		for (NameValuePair param : params) {
 			builder.addParameter(param.getName(), param.getValue());
 		}
+		final URI uri;
 		try {
-			return builder.build();
+			uri = builder.build();
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e);
 		}
+		return get(uri, resultType);
 	}
 
 	private <T extends Result> T tradePost(Class<T> valueType, String op,

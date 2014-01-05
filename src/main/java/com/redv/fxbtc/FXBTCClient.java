@@ -100,15 +100,15 @@ public class FXBTCClient {
 	}
 
 	public Info getInfo() throws IOException {
-		return tradePost(InfoResult.class, "get_info").getInfo();
+		return callTrade(InfoResult.class, "get_info").getInfo();
 	}
 
 	public List<Order> getOrders(Symbol symbol) throws IOException {
-		return tradePost(OrdersResult.class, "get_orders", symbol).getOrders();
+		return callTrade(OrdersResult.class, "get_orders", symbol).getOrders();
 	}
 
 	public Long cancelOrder(Symbol symbol, long id) throws IOException {
-		return tradePost(CancelOrderResult.class, "cancel_order", symbol,
+		return callTrade(CancelOrderResult.class, "cancel_order", symbol,
 				new BasicNameValuePair("id", Long.toString(id))).getId();
 	}
 
@@ -124,7 +124,7 @@ public class FXBTCClient {
 
 	public TradeInfo trade(Symbol symbol, Type type, BigDecimal rate,
 			BigDecimal vol) throws IOException {
-		return tradePost(TradeInfoResult.class, "trade", symbol,
+		return callTrade(TradeInfoResult.class, "trade", symbol,
 				new BasicNameValuePair("type", type.getTradeType()),
 				new BasicNameValuePair("rate", rate.toString()),
 				new BasicNameValuePair("vol", vol.toString())).getTradeInfo();
@@ -147,8 +147,7 @@ public class FXBTCClient {
 			Class<T> resultType,
 			String op,
 			Symbol symbol,
-			NameValuePair... params)
-			throws IOException {
+			NameValuePair... params) throws IOException {
 		final URIBuilder builder = new URIBuilder(MARKET_API)
 			.setParameter("op", op)
 			.setParameter("symbol", symbol.toString());
@@ -164,19 +163,28 @@ public class FXBTCClient {
 		return get(uri, resultType);
 	}
 
-	private <T extends Result> T tradePost(Class<T> valueType, String op,
-			Symbol symbol, NameValuePair... params) throws IOException {
-		NameValuePair symbolParam = new BasicNameValuePair("symbol", symbol.toString());
-		return tradePost(valueType, op, ArrayUtils.add(params, symbolParam));
+	private <T extends Result> T callTrade(
+			Class<T> valueType,
+			String op,
+			Symbol symbol,
+			NameValuePair... params) throws IOException {
+		NameValuePair sp = new BasicNameValuePair("symbol", symbol.toString());
+		return callTrade(valueType, op, ArrayUtils.add(params, sp));
 	}
 
-	private <T extends Result> T tradePost(Class<T> valueType, String op,
+	private <T extends Result> T callTrade(
+			Class<T> valueType,
+			String op,
 			NameValuePair... params) throws IOException {
 		List<NameValuePair> list = new ArrayList<>(params.length + 2);
+
 		list.add(new BasicNameValuePair("token", getFreshToken().getToken()));
 		list.add(new BasicNameValuePair("op", op));
+
 		Collections.addAll(list, params);
+
 		T value = post(TRADE_API, valueType, list);
+
 		log.debug("Trade post result: {}", value);
 		return value;
 	}

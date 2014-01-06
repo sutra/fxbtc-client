@@ -30,6 +30,7 @@ import com.redv.fxbtc.domain.result.DepthResult;
 import com.redv.fxbtc.domain.result.InfoResult;
 import com.redv.fxbtc.domain.result.OrdersResult;
 import com.redv.fxbtc.domain.result.Result;
+import com.redv.fxbtc.domain.result.Result.Error;
 import com.redv.fxbtc.domain.result.TickerResult;
 import com.redv.fxbtc.domain.result.TokenResult;
 import com.redv.fxbtc.domain.result.TradeInfoResult;
@@ -63,27 +64,25 @@ public class FXBTCClient {
 	}
 
 	public Ticker getTicker(Symbol symbol) throws IOException {
-		URI uri = buildMarketURI("query_ticker", symbol);
-		return get(uri, TickerResult.class).getTicker();
+		return callMarket(TickerResult.class, "query_ticker", symbol).getTicker();
 	}
 
 	public Depth getDepth(Symbol symbol) throws IOException {
-		URI uri = buildMarketURI("query_depth", symbol);
-		return get(uri, DepthResult.class).getDepth();
+		return callMarket(DepthResult.class, "query_depth", symbol).getDepth();
 	}
 
 	public List<Trade> getLastTrades(Symbol symbol, int count)
 			throws IOException {
-		URI uri = buildMarketURI("query_last_trades", symbol,
-				new BasicNameValuePair("count", Integer.toString(count)));
-		return get(uri, TradesResult.class).getTrades();
+		return callMarket(TradesResult.class, "query_last_trades", symbol,
+				new BasicNameValuePair("count", String.valueOf(count)))
+			.getTrades();
 	}
 
 	public List<Trade> getHistoryTrades(Symbol symbol, long since)
 			throws IOException {
-		URI uri = buildMarketURI("query_history_trades", symbol,
-				new BasicNameValuePair("since", Long.toString(since)));
-		return get(uri, TradesResult.class).getTrades();
+		return callMarket(TradesResult.class, "query_history_trades", symbol,
+				new BasicNameValuePair("since", String.valueOf(since)))
+			.getTrades();
 	}
 
 	public Token getToken() throws IOException {
@@ -102,15 +101,15 @@ public class FXBTCClient {
 	}
 
 	public Info getInfo() throws IOException {
-		return tradePost(InfoResult.class, "get_info").getInfo();
+		return callTrade(InfoResult.class, "get_info").getInfo();
 	}
 
 	public List<Order> getOrders(Symbol symbol) throws IOException {
-		return tradePost(OrdersResult.class, "get_orders", symbol).getOrders();
+		return callTrade(OrdersResult.class, "get_orders", symbol).getOrders();
 	}
 
 	public Long cancelOrder(Symbol symbol, long id) throws IOException {
-		return tradePost(CancelOrderResult.class, "cancel_order", symbol,
+		return callTrade(CancelOrderResult.class, "cancel_order", symbol,
 				new BasicNameValuePair("id", Long.toString(id))).getId();
 	}
 
@@ -126,7 +125,7 @@ public class FXBTCClient {
 
 	public TradeInfo trade(Symbol symbol, Type type, BigDecimal rate,
 			BigDecimal vol) throws IOException {
-		return tradePost(TradeInfoResult.class, "trade", symbol,
+		return callTrade(TradeInfoResult.class, "trade", symbol,
 				new BasicNameValuePair("type", type.getTradeType()),
 				new BasicNameValuePair("rate", rate.toString()),
 				new BasicNameValuePair("vol", vol.toString())).getTradeInfo();
@@ -145,46 +144,68 @@ public class FXBTCClient {
 		}
 	}
 
-	private URI buildMarketURI(String op, Symbol symbol,
-			NameValuePair... params) {
-		List<NameValuePair> list = new ArrayList<>(params.length + 2);
-		list.add(new BasicNameValuePair("op", op));
-		list.add(new BasicNameValuePair("symbol", symbol.toString()));
-		Collections.addAll(list, params);
-		return buildURI(MARKET_API, list);
-	}
-
-	private URI buildURI(URI uri, List<NameValuePair> params) {
-		NameValuePair[] array = new NameValuePair[params.size()];
-		params.toArray(array);
-		return buildURI(uri, array);
-	}
-
-	private URI buildURI(URI uri, NameValuePair... params) {
-		URIBuilder builder = new URIBuilder(uri);
+	private <T extends Result> T callMarket(
+			Class<T> resultType,
+			String op,
+			Symbol symbol,
+			NameValuePair... params) throws IOException {
+		final URIBuilder builder = new URIBuilder(MARKET_API)
+			.setParameter("op", op)
+			.setParameter("symbol", symbol.toString());
 		for (NameValuePair param : params) {
 			builder.addParameter(param.getName(), param.getValue());
 		}
+		final URI uri;
 		try {
-			return builder.build();
+			uri = builder.build();
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e);
 		}
+		return get(uri, resultType);
 	}
 
-	private <T extends Result> T tradePost(Class<T> valueType, String op,
-			Symbol symbol, NameValuePair... params) throws IOException {
-		NameValuePair symbolParam = new BasicNameValuePair("symbol", symbol.toString());
-		return tradePost(valueType, op, ArrayUtils.add(params, symbolParam));
+	private <T extends Result> T callTrade(
+			Class<T> valueType,
+			String op,
+			Symbol symbol,
+			NameValuePair... params) throws IOException {
+		NameValuePair sp = new BasicNameValuePair("symbol", symbol.toString());
+		return callTrade(valueType, op, ArrayUtils.add(params, sp));
 	}
 
-	private <T extends Result> T tradePost(Class<T> valueType, String op,
+	/**
+	 * Call trade API, retry once if got token timeout exception.
+	 *
+	 * @param valueType the return value type.
+	 * @param op the operation.
+	 * @param params the parameters
+	 * @return the response from trade API.
+	 * @throws IOException indicates I/O exception.
+	 */
+	private <T extends Result> T callTrade(
+			Class<T> valueType,
+			String op,
+			NameValuePair... params) throws IOException {
+		try {
+			return callTradeHelper(valueType, op, params);
+		} catch (TokenTimeoutException e) {
+			return callTradeHelper(valueType, op, params);
+		}
+	}
+
+	private <T extends Result> T callTradeHelper(
+			Class<T> valueType,
+			String op,
 			NameValuePair... params) throws IOException {
 		List<NameValuePair> list = new ArrayList<>(params.length + 2);
+
 		list.add(new BasicNameValuePair("token", getFreshToken().getToken()));
 		list.add(new BasicNameValuePair("op", op));
+
 		Collections.addAll(list, params);
+
 		T value = post(TRADE_API, valueType, list);
+
 		log.debug("Trade post result: {}", value);
 		return value;
 	}
@@ -195,20 +216,30 @@ public class FXBTCClient {
 		if (result.isSuccess()) {
 			return result;
 		} else {
-			throw new FXBTCClientException(result.getError());
+			throw convertException(result.getError());
 		}
 	}
 
 	private <T extends Result> T post(URI uri, Class<T> valueType,
 			List<NameValuePair> params) throws FXBTCClientException,
 			IOException {
-		T result = httpClient.post(TRADE_API, valueType, params);
+		T result = httpClient.post(uri, valueType, params);
 		if (result.isSuccess()) {
 			return result;
 		} else {
 			log.debug("result: {}", result);
-			throw new FXBTCClientException(result.getError());
+			throw convertException(result.getError());
 		}
+	}
+
+	private FXBTCClientException convertException(Error error) {
+		final FXBTCClientException e;
+		if (error.getCode() == -202) {
+			e = new TokenTimeoutException(error);
+		} else {
+			e = new FXBTCClientException(error);
+		}
+		return e;
 	}
 
 }

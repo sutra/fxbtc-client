@@ -30,6 +30,7 @@ import com.redv.fxbtc.domain.result.DepthResult;
 import com.redv.fxbtc.domain.result.InfoResult;
 import com.redv.fxbtc.domain.result.OrdersResult;
 import com.redv.fxbtc.domain.result.Result;
+import com.redv.fxbtc.domain.result.Result.Error;
 import com.redv.fxbtc.domain.result.TickerResult;
 import com.redv.fxbtc.domain.result.TokenResult;
 import com.redv.fxbtc.domain.result.TradeInfoResult;
@@ -172,7 +173,27 @@ public class FXBTCClient {
 		return callTrade(valueType, op, ArrayUtils.add(params, sp));
 	}
 
+	/**
+	 * Call trade API, retry once if got token timeout exception.
+	 *
+	 * @param valueType the return value type.
+	 * @param op the operation.
+	 * @param params the parameters
+	 * @return the response from trade API.
+	 * @throws IOException indicates I/O exception.
+	 */
 	private <T extends Result> T callTrade(
+			Class<T> valueType,
+			String op,
+			NameValuePair... params) throws IOException {
+		try {
+			return callTradeHelper(valueType, op, params);
+		} catch (TokenTimeoutException e) {
+			return callTradeHelper(valueType, op, params);
+		}
+	}
+
+	private <T extends Result> T callTradeHelper(
 			Class<T> valueType,
 			String op,
 			NameValuePair... params) throws IOException {
@@ -195,7 +216,7 @@ public class FXBTCClient {
 		if (result.isSuccess()) {
 			return result;
 		} else {
-			throw new FXBTCClientException(result.getError());
+			throw convertException(result.getError());
 		}
 	}
 
@@ -207,8 +228,18 @@ public class FXBTCClient {
 			return result;
 		} else {
 			log.debug("result: {}", result);
-			throw new FXBTCClientException(result.getError());
+			throw convertException(result.getError());
 		}
+	}
+
+	private FXBTCClientException convertException(Error error) {
+		final FXBTCClientException e;
+		if (error.getCode() == -202) {
+			e = new TokenTimeoutException(error);
+		} else {
+			e = new FXBTCClientException(error);
+		}
+		return e;
 	}
 
 }

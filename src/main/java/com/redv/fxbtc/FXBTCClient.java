@@ -132,13 +132,13 @@ public class FXBTCClient {
 	}
 
 	private Token getFreshToken() throws IOException {
-		refreshToken();
+		refreshToken(false);
 
 		return token;
 	}
 
-	private void refreshToken() throws IOException {
-		if (token == null || token.isTimeoutAfter(5)) {
+	private void refreshToken(boolean force) throws IOException {
+		if (force || token == null || token.isTimeoutAfter(5)) {
 			token = getToken();
 			log.debug("Token: {}", token);
 		}
@@ -189,6 +189,8 @@ public class FXBTCClient {
 		try {
 			return callTradeHelper(valueType, op, params);
 		} catch (TokenTimeoutException e) {
+			refreshToken(true);
+
 			return callTradeHelper(valueType, op, params);
 		}
 	}

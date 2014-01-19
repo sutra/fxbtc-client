@@ -21,7 +21,7 @@ public class Main {
 		String username = args[0];
 		String password = args[1];
 
-		FXBTCClient client = new FXBTCClient(username, password);
+		FXBTCClient client = new FXBTCClient(username, password, 5000, 5000, 5000);
 
 		// Ticker
 		Ticker ticker = client.getTicker(Symbol.BTC_CNY);
@@ -52,6 +52,8 @@ public class Main {
 		// Bid
 		// TradeInfo tradeInfo = client.bid(Symbol.BTC_CNY, new BigDecimal("0.01"), new BigDecimal("0.001"));
 		// System.out.println(tradeInfo);
+
+		client.close();
 	}
 
 }

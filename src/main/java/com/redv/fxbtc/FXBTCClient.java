@@ -36,7 +36,7 @@ import com.redv.fxbtc.domain.result.TokenResult;
 import com.redv.fxbtc.domain.result.TradeInfoResult;
 import com.redv.fxbtc.domain.result.TradesResult;
 
-public class FXBTCClient {
+public class FXBTCClient implements AutoCloseable {
 
 	public static final String ENCODING = "UTF-8";
 
@@ -52,12 +52,19 @@ public class FXBTCClient {
 
 	private volatile Token token;
 
-	public FXBTCClient() {
-		httpClient = new HttpClient();
+	public FXBTCClient(
+			int socketTimeout,
+			int connectTimeout,
+			int connectionRequestTimeout) {
+		httpClient = new HttpClient(
+				socketTimeout, connectTimeout, connectionRequestTimeout);
 	}
 
-	public FXBTCClient(String username, String password) {
-		this();
+	public FXBTCClient(String username, String password,
+			int socketTimeout,
+			int connectTimeout,
+			int connectionRequestTimeout) {
+		this(socketTimeout, connectTimeout, connectionRequestTimeout);
 
 		this.username = username;
 		this.password = password;
@@ -129,6 +136,14 @@ public class FXBTCClient {
 				new BasicNameValuePair("type", type.getTradeType()),
 				new BasicNameValuePair("rate", rate.toString()),
 				new BasicNameValuePair("vol", vol.toString())).getTradeInfo();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void close() throws IOException {
+		httpClient.close();
 	}
 
 	private Token getFreshToken() throws IOException {

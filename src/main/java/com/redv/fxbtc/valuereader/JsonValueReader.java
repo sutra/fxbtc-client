@@ -34,11 +34,16 @@ public class JsonValueReader<T> implements ValueReader<T> {
 
 		log.debug("Reading {} from \"{}\".", valueType, content);
 
-		try (final InputStream in = IOUtils.toInputStream(content, ENCODING)) {
+		// The response is incorrect in json format, by prefixed character "1".
+		int braceIndex = content.indexOf("{");
+		final String fixedContent = content.substring(braceIndex);
+		log.debug("Fixed content: \"{}\"", fixedContent);
+
+		try (final InputStream in = IOUtils.toInputStream(fixedContent, ENCODING)) {
 			return objectMapper.readValue(in, valueType);
 		} catch (JsonParseException e) {
 			String msg = String.format("Parse from \"%1$s\" failed: %2$s",
-					content,
+					fixedContent,
 					e.getMessage());
 			throw new JsonParseException(msg, e.getLocation(), e);
 		}
